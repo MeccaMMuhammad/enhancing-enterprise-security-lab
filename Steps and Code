@@ -1,0 +1,113 @@
+## 🐧 Exercise 1: Linux Server Hardening Techniques
+
+**Device Used:** `ACIALMA` (Alma Linux 9.1)
+
+### 🔐 SSH Configuration Hardening
+
+1. Open SSH config file:
+ 
+   sudo vim /etc/ssh/sshd_config
+
+Modify these lines in Vim:
+
+
+Port 1155                # Changed SSH port
+PermitRootLogin no       # Disable root login
+MaxAuthTries 3           # Limit authentication attempts
+MaxSessions 3            # Limit SSH sessions
+Save and exit Vim:
+
+
+:wq
+
+🔥 SELinux and Firewall Configuration
+
+Register new SSH port with SELinux:
+
+
+sudo semanage port -a -t ssh_port_t -p tcp 1155
+
+Allow port 1155 through the firewall:
+
+sudo firewall-cmd --zone=public --add-port=1155/tcp --permanent
+sudo firewall-cmd --reload
+sudo firewall-cmd --zone=public --list-ports
+
+Restart and verify SSHD:
+
+
+sudo systemctl restart sshd
+sudo systemctl status sshd
+
+✅ Test SSH Access from Windows
+
+From ACIDC01 (Windows Server):
+
+powershell
+ssh -p 1155 aciadmin@192.168.0.4
+# Enter password: Passw0rd
+
+🌐 Linux Firewall GUI
+
+Install GUI firewall tool:
+
+sudo dnf install firewall-config -y
+
+Launch GUI via Activities → Show Applications → Firewall.
+
+🪟 Exercise 2: Windows Server Hardening Techniques
+
+Devices Used:
+
+ACIDC01 – Domain Controller
+
+ACIDM01 – Domain Member Server
+
+🛡️ Group Policy Configurations
+Launch Group Policy Management:
+
+Server Manager → Tools → Group Policy Management
+
+Edit Default Domain Policy:
+
+Computer Configuration → Policies → Windows Settings → Security Settings
+
+Modify the following settings:
+
+Password Policy:
+Maximum password age: 7 days
+
+Minimum password length: 10 characters
+
+Account Lockout Policy:
+Lockout threshold: 5 failed attempts
+
+Result: Account locks for 10 minutes after 5 failed logins (auto-configured).
+
+🔥 Task 2: Windows Firewall Management
+
+Step 1: Allow Application Through Firewall
+Open:
+
+Windows Defender Firewall → Allow an app through the firewall
+
+Enable:
+
+Performance Logs and Alerts
+
+Domain checkbox
+
+Step 2: Enable Logging
+
+Open:
+Windows Defender Firewall with Advanced Security → Firewall Properties → Logging
+
+Set:
+
+Log dropped packets: Yes
+
+Log successful connections: Yes
+
+View logs under:
+
+Monitoring → Firewall
